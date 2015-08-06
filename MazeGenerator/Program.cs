@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading.Tasks; 
 
 namespace MazeGenerator
 {
@@ -10,6 +10,7 @@ namespace MazeGenerator
     {
         static void Main(string[] args)
         {
+            var maze = new Maze(50,50);
         }
     }
 }

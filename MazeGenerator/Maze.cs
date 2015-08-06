@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace WorldGen
+namespace MazeGenerator
 {
     public class Maze
     {
