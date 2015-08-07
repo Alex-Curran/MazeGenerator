@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
 
@@ -8,11 +10,7 @@ namespace MazeGenerator
     {
         private int height;
         private int width;
-        private bool[,] northWall; 
-        private bool[,] eastWall;
-        private bool[,] southWall;
-        private bool[,] westWall;
-        private bool[,] map; // True:Visited False: Not Visited
+        private Cell[,] map; 
         private readonly Random randomGenerator = new Random();
 
         public Maze(int height, int width)
@@ -25,47 +23,91 @@ namespace MazeGenerator
 
         private void Intialize()
         {
-            map = new bool[height + 1,width + 1];
-            for (var i = 0; i < map.GetLength(0); i++)
+            map = new Cell[height,width];
+            for (var i = 0; i < height; i++)
             {
-                for (var j = 0; j < map.GetLength(1); j++)
+                for (var j = 0; j < width; j++)
                 {
-                    map[i, j] = false;
+                    map[i, j] = new Cell(i, j);
+                    if (i == 0 || i == width - 1 || j == 0 || j == width - 1)
+                    {
+                        map[i, j].State = States.Border;
+                    }
+                    else
+                    {
+                        map[i, j].State = States.NotVisited;
+                    }
                 }
             }
         }
 
         public void Generate(int x = 1, int y = 1)
         {
-            map[x, y] = true;
+            // Select the current cell map[x,y] is the current cell
+            Cell currentCell = map[x, y];
+          
+            // This cell has four neighbors, find its unvisited neighbors
+            List<Cell> unvisitedNeighbors = new List<Cell>();
+            unvisitedNeighbors = CheckNeighbors(currentCell,unvisitedNeighbors);
 
-            //while (!map[x-1,y] | !map[x+1,y] | !map[x,y+1] | !map[x,y-1])
-            //{
-            //    if()
-            //}
+            // Choose one of the unvisited neighbors and mark it as visited, then start over with as the current cell
+            if (unvisitedNeighbors.Count != 0)
+            {
+                var random = randomGenerator.Next(unvisitedNeighbors.Count);
+                var selectedNeighbor = unvisitedNeighbors[random];
+                selectedNeighbor.State = States.Visited;
+                Generate(selectedNeighbor.PositionX, selectedNeighbor.PositionY);
+            }
+
         }
 
-        internal void Display()
+        /* *
+         * Returns a List of neighboring cells 
+         * 
+         * */
+        private List<Cell> CheckNeighbors(Cell currentCell, List<Cell> unvisitedNeighbors )
         {
-            for (var x = 0; x < map.GetLength(0); x += 1)
+           
+            if (map[currentCell.PositionX + 1, currentCell.PositionY].State == States.NotVisited)
             {
-                for (var y = 0; y < map.GetLength(1); y += 1)
+                unvisitedNeighbors.Add(map[currentCell.PositionX + 1, currentCell.PositionY]);
+            }
+            if (map[currentCell.PositionX - 1, currentCell.PositionY].State == States.NotVisited)
+            {
+                unvisitedNeighbors.Add(map[currentCell.PositionX - 1, currentCell.PositionY]);
+            }
+            if (map[currentCell.PositionX ,currentCell.PositionY + 1].State == States.NotVisited)
+            {
+                unvisitedNeighbors.Add(map[currentCell.PositionX, currentCell.PositionY + 1]);
+            }
+            if (map[currentCell.PositionX, currentCell.PositionY - 1].State == States.NotVisited)
+            {
+                unvisitedNeighbors.Add(map[currentCell.PositionX, currentCell.PositionY - 1]);
+            }
+
+            return unvisitedNeighbors;
+        }
+
+        internal void DisplayMaze()
+        {
+            for (var i = 0; i < height; i += 1)
+            {
+                for (var j = 0; j < width; j += 1)
                 {
-                    // Draw borders around the outer layer of the maze 
-                    if (x == 0 || x == width || y == 0 || y == width )
+                    if (map[i, j].State == States.Border)
                     {
                         Console.Write("#");
                     }
-                    else if (map[x, y])
+                    else if(map[i,j].State == States.NotVisited)
                     {
-                        Console.Write(" ");    
+                        Console.Write("#");
                     }
-                    else
+                    else if (map[i, j].State == States.Visited)
                     {
-                        Console.Write("0");
+                        Console.Write(" ");
                     }
                 }
-                Console.WriteLine();
+               Console.WriteLine();
             }
         }
     }

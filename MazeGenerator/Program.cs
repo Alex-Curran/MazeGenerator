@@ -13,7 +13,7 @@ namespace MazeGenerator
             var maze = new Maze(10,10);
            
             maze.Generate();
-            maze.Display();
+            maze.DisplayMaze();
 
         }
     }
