@@ -11,6 +11,10 @@ namespace MazeGenerator
         static void Main(string[] args)
         {
             var maze = new Maze(50,50);
+           
+            maze.Generate();
+            maze.Display();
+
         }
     }
 }
