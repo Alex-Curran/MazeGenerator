@@ -7,10 +7,10 @@ namespace MazeGenerator
     public class Maze
     {
         private readonly int height;
+        private readonly Random randomGenerator = new Random();
         private readonly int width;
         private Cell[,] mazeMap;
         private Stack<Cell> stack;
-        private readonly Random randomGenerator = new Random();
 
         public Maze(int height, int width)
         {
@@ -24,11 +24,13 @@ namespace MazeGenerator
         {
             mazeMap = new Cell[height, width];
             stack = new Stack<Cell>();
+
             for (var i = 0; i < height; i++)
             {
                 for (var j = 0; j < width; j++)
                 {
                     mazeMap[i, j] = new Cell(i, j);
+
                     if (i == 0 || i == width - 1 || j == 0 || j == width - 1)
                     {
                         mazeMap[i, j].State = States.Border;
@@ -47,7 +49,7 @@ namespace MazeGenerator
             {
                 var currentCell = mazeMap[x, y];
                 currentCell.State = States.Visited;
-             
+
                 // This cell has four neighbors, find its unvisited neighbors
                 var unvisitedNeighbors = new List<Cell>();
                 unvisitedNeighbors = CheckNeighbors(currentCell, unvisitedNeighbors);
@@ -93,22 +95,26 @@ namespace MazeGenerator
             {
                 case Direction.Up:
                 {
-                    selectedNeighbor.NorthBorder = false;
+                    currentCell.NorthBorder = false;
+                    selectedNeighbor.SouthBorder = false;
                     break;
                 }
                 case Direction.Down:
                 {
-                    selectedNeighbor.SouthBorder = false;
+                    selectedNeighbor.NorthBorder = false;
+                    currentCell.SouthBorder = false;
                     break;
                 }
                 case Direction.Left:
                 {
-                    selectedNeighbor.EastBorder = false;
+                    currentCell.EastBorder = false;
+                    selectedNeighbor.WestBorder = false;
                     break;
                 }
                 case Direction.Right:
                 {
-                    selectedNeighbor.WestBorder = false;
+                    currentCell.WestBorder = false;
+                    selectedNeighbor.EastBorder = false;
                     break;
                 }
             }
@@ -118,7 +124,6 @@ namespace MazeGenerator
         {
             var path = @"maze.txt";
 
-            // Create a file to write to. 
             using (var sw = File.AppendText(path))
             {
                 for (var i = 0; i < height; i += 1)
@@ -129,22 +134,18 @@ namespace MazeGenerator
                         {
                             sw.Write("*");
                         }
-                        else if (currentCell.State == States.Border)
+                        else if (map[i, j].State == States.Visited)
+                        {
+                            sw.Write(" ");
+                        }
+                        else if (map[i, j].State == States.NotVisited)
+                        {
+                            sw.Write("0");
+                        }
+                        else if (map[i, j].State == States.Border)
                         {
                             sw.Write("#");
                         }
-                        else
-                        {
-                            currentCell.Print();
-                        }
-                        //else if (map[i, j].State == States.NotVisited)
-                        //{
-                        //    sw.Write("#");
-                        //}
-                        //else if (map[i, j].State == States.Visited)
-                        //{
-                        //    sw.Write(" ");
-                        //}
                     }
                     sw.WriteLine();
                 }
@@ -178,28 +179,5 @@ namespace MazeGenerator
 
             return unvisitedNeighbors;
         }
-
-        //internal void DisplayMaze()
-        //{
-        //    for (var i = 0; i < height; i += 1)
-        //    {
-        //        for (var j = 0; j < width; j += 1)
-        //        {
-        //            if (mazeMap[i, j].State == States.Border)
-        //            {
-        //                Console.Write("#");
-        //            }
-        //            else if (mazeMap[i, j].State == States.NotVisited)
-        //            {
-        //                Console.Write("#");
-        //            }
-        //            else if (mazeMap[i, j].State == States.Visited)
-        //            {
-        //                Console.Write(" ");
-        //            }
-        //        }
-        //        Console.WriteLine();
-        //    }
-        //}
     }
 }

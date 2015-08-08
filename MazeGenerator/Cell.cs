@@ -1,7 +1,8 @@
 ﻿
+
 namespace MazeGenerator
 {
-    class Cell
+    internal class Cell
     {
         public int PositionX { get; private set; }
         public int PositionY { get; private set; }
@@ -10,7 +11,7 @@ namespace MazeGenerator
         public bool EastBorder { get; set; }
         public bool WestBorder { get; set; }
         public States State { get; set; }
-        
+
         public Cell(int x, int y)
         {
             PositionX = x;
@@ -21,11 +22,5 @@ namespace MazeGenerator
             EastBorder = true;
             WestBorder = true;
         }
-
-        void Print()
-        {
-            
-        }
-
     }
 }
